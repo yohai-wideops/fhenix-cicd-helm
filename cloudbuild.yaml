@@ -17,6 +17,19 @@ steps:
       - |
         git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
 
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Check Kubernetes Connectivity'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        kubectl cluster-info
+        kubectl get nodes
+
+
+
   # 3️⃣ Apply Backend Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Backend'
@@ -51,4 +64,3 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 
-  
