@@ -8,17 +8,7 @@ steps:
         gcloud container clusters get-credentials $_CLUSTER_NAME --region $_REGION
         gcloud auth configure-docker
 
-  # 2️⃣ Install Helm (Manually)
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'Install Helm'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm version
-
-  # 3️⃣ Clone Helm Chart Repo
+  # 2️⃣ Clone Helm Chart Repo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Clone Helm Charts Repo'
     entrypoint: 'bash'
@@ -27,31 +17,34 @@ steps:
       - |
         git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
 
-  # 4️⃣ Apply Backend Helm Chart
+  # 3️⃣ Apply Backend Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Backend'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
         helm upgrade --install backend helm-repo/backend --namespace backend --create-namespace --atomic
 
-  # 5️⃣ Apply Frontend Default Helm Chart
+  # 4️⃣ Apply Frontend Default Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Frontend (Default)'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
         helm upgrade --install frontend-default helm-repo/frontend-default --namespace frontend --create-namespace --atomic
 
-  # 6️⃣ Apply Frontend HPC Helm Chart
+  # 5️⃣ Apply Frontend HPC Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Deploy Frontend (HPC)'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
         helm upgrade --install frontend-hpc helm-repo/frontend-hpc --namespace frontend --create-namespace --atomic
 
 options:
