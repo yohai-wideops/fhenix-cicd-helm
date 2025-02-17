@@ -54,3 +54,5 @@ steps:
         kubectl apply -f k8s/frontend-default-deployment.yaml
 
 
+options:
+  logging: CLOUD_LOGGING_ONLY
