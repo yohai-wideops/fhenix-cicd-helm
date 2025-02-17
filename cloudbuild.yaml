@@ -18,7 +18,7 @@ steps:
         git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
 
   # 3️⃣ Apply Backend Helm Chart
-  - name: 'gcr.io/cloud-builders/helm'
+  - name: 'gcr.io/rimusz/cloud-builders/helm'
     id: 'Deploy Backend'
     args:
       - 'upgrade'
@@ -31,7 +31,7 @@ steps:
       - '--atomic'
 
   # 4️⃣ Apply Frontend Default Helm Chart
-  - name: 'gcr.io/cloud-builders/helm'
+  - name: 'gcr.io/rimusz/cloud-builders/helm'
     id: 'Deploy Frontend (Default)'
     args:
       - 'upgrade'
@@ -44,7 +44,7 @@ steps:
       - '--atomic'
 
   # 5️⃣ Apply Frontend HPC Helm Chart
-  - name: 'gcr.io/cloud-builders/helm'
+  - name: 'gcr.io/rimusz/cloud-builders/helm'
     id: 'Deploy Frontend (HPC)'
     args:
       - 'upgrade'
