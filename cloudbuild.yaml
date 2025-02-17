@@ -38,7 +38,8 @@ steps:
       - '-c'
       - |
         curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm upgrade --install backend helm-repo/backend --namespace backend --create-namespace 
+        helm upgrade --install backend helm-repo/backend --namespace hpc --create-namespace 
+        helm upgrade --install backend helm-repo/backend --namespace default --create-namespace 
 
   # 4️⃣ Apply Frontend Default Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -48,7 +49,7 @@ steps:
       - '-c'
       - |
         curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm upgrade --install frontend-default helm-repo/frontend-default --namespace frontend --create-namespace 
+        helm upgrade --install frontend-default helm-repo/frontend-default --namespace default --create-namespace 
 
   # 5️⃣ Apply Frontend HPC Helm Chart (Install Helm in Same Step)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -58,7 +59,7 @@ steps:
       - '-c'
       - |
         curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        helm upgrade --install frontend-hpc helm-repo/frontend-hpc --namespace frontend --create-namespace 
+        helm upgrade --install frontend-hpc helm-repo/frontend-hpc --namespace hpc --create-namespace 
 
 options:
   logging: CLOUD_LOGGING_ONLY
