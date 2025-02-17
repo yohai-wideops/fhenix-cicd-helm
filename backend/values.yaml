@@ -2,7 +2,6 @@ imageRegistry: "GAR_LOCATION-docker.pkg.dev/GCP_PROJECT_ID/GAR_REPO"
 
 image: poc-backend
 tag: c70cd59
-namespace: backend
 replicas: 2
 ports:
   containerPort: 3000
