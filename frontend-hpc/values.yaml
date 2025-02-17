@@ -1,7 +1,7 @@
 imageRegistry: "GAR_LOCATION-docker.pkg.dev/GCP_PROJECT_ID/GAR_REPO"
 
 image: frontend-hpc
-tag: latest
+tag: c70cd59
 namespace: hpc
 replicas: 2
 ports:
