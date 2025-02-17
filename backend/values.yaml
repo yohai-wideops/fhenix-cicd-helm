@@ -1,4 +1,4 @@
-imageRegistry: "GAR_LOCATION-docker.pkg.dev/GCP_PROJECT_ID/GAR_REPO"
+imageRegistry: "europe-west1-docker.pkg.dev/poc-eks-gke-migration/poc-backend"
 
 image: poc-backend
 tag: c70cd59
