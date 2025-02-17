@@ -7,51 +7,46 @@ steps:
       - |
         gcloud container clusters get-credentials $_CLUSTER_NAME --region $_REGION
 
-  # 2️⃣ Extract commit hash for tagging
-  - name: 'alpine'
-    id: 'Extract Commit Hash'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - |
-        echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> /workspace/commit_hash.txt
-
-  # 3️⃣ Update Kubernetes manifests with new image
+  # 2️⃣ Clone Helm chart repo (fhenix-cicd-helm)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'Update Backend Image in GKE (HPC Namespace)'
+    id: 'Clone Helm Charts Repo'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-backend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-hpc-deployment.yaml
-        kubectl apply -f k8s/backend-hpc-deployment.yaml
+        git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
+        cd helm-repo
 
+  # 3️⃣ Apply Backend Helm Chart
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'Update Backend Image in GKE (Default Namespace)'
+    id: 'Deploy Backend'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-backend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-default-deployment.yaml
-        kubectl apply -f k8s/backend-default-deployment.yaml
+        cd helm-repo/backend
+        helm upgrade --install backend . --namespace default --create-namespace
+        helm upgrade --install backend . --namespace hpc --create-namespace
 
+  # 4️⃣ Apply Frontend Default Helm Chart
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'Update Frontend Image (HPC)'
+    id: 'Deploy Frontend (Default)'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-frontend-hpc.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-frontend-hpc:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-hpc-deployment.yaml
-        kubectl apply -f k8s/frontend-hpc-deployment.yaml
+        cd helm-repo/frontend-default
+        helm upgrade --install frontend-default . --namespace default --create-namespace
 
+  # 5️⃣ Apply Frontend HPC Helm Chart
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: 'Update Frontend Image (Default)'
+    id: 'Deploy Frontend (HPC)'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-frontend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-frontend:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-default-deployment.yaml
-        kubectl apply -f k8s/frontend-default-deployment.yaml
+        cd helm-repo/frontend-hpc
+        helm upgrade --install frontend-hpc . --namespace hpc --create-namespace
 
 options:
   logging: CLOUD_LOGGING_ONLY
