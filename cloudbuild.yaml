@@ -1,0 +1,56 @@
+steps:
+  # 1️⃣ Authenticate with GKE
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION
+
+  # 2️⃣ Extract commit hash for tagging
+  - name: 'alpine'
+    id: 'Extract Commit Hash'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> /workspace/commit_hash.txt
+
+  # 3️⃣ Update Kubernetes manifests with new image
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Update Backend Image in GKE (HPC Namespace)'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image: .*poc-backend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-hpc-deployment.yaml
+        kubectl apply -f k8s/backend-hpc-deployment.yaml
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Update Backend Image in GKE (Default Namespace)'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image: .*poc-backend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-default-deployment.yaml
+        kubectl apply -f k8s/backend-default-deployment.yaml
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Update Frontend Image (HPC)'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image: .*poc-frontend-hpc.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-frontend-hpc:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-hpc-deployment.yaml
+        kubectl apply -f k8s/frontend-hpc-deployment.yaml
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Update Frontend Image (Default)'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image: .*poc-frontend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-frontend:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-default-deployment.yaml
+        kubectl apply -f k8s/frontend-default-deployment.yaml
+
+
