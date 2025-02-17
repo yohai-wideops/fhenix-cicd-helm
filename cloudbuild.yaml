@@ -6,6 +6,7 @@ steps:
       - '-c'
       - |
         gcloud container clusters get-credentials $_CLUSTER_NAME --region $_REGION
+        gcloud auth configure-docker
 
   # 2️⃣ Clone Helm Chart Repo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -15,37 +16,45 @@ steps:
       - '-c'
       - |
         git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
-        cd helm-repo
 
-  # 3️⃣ Apply Backend Helm Chart (Uses Alpine Helm Image)
-  - name: 'alpine/helm'
+  # 3️⃣ Apply Backend Helm Chart
+  - name: 'gcr.io/$PROJECT_ID/cloud-builders-helm'
     id: 'Deploy Backend'
-    entrypoint: 'sh'
     args:
-      - '-c'
-      - |
-        cd helm-repo/backend
-        helm upgrade --install backend . --namespace backend --create-namespace
+      - 'upgrade'
+      - '--install'
+      - 'backend'
+      - './helm-repo/backend'
+      - '--namespace'
+      - 'backend'
+      - '--create-namespace'
+      - '--atomic'
 
-  # 4️⃣ Apply Frontend Default Helm Chart (Uses Alpine Helm Image)
-  - name: 'alpine/helm'
+  # 4️⃣ Apply Frontend Default Helm Chart
+  - name: 'gcr.io/$PROJECT_ID/cloud-builders-helm'
     id: 'Deploy Frontend (Default)'
-    entrypoint: 'sh'
     args:
-      - '-c'
-      - |
-        cd helm-repo/frontend-default
-        helm upgrade --install frontend-default . --namespace frontend --create-namespace
+      - 'upgrade'
+      - '--install'
+      - 'frontend-default'
+      - './helm-repo/frontend-default'
+      - '--namespace'
+      - 'frontend'
+      - '--create-namespace'
+      - '--atomic'
 
-  # 5️⃣ Apply Frontend HPC Helm Chart (Uses Alpine Helm Image)
-  - name: 'alpine/helm'
+  # 5️⃣ Apply Frontend HPC Helm Chart
+  - name: 'gcr.io/$PROJECT_ID/cloud-builders-helm'
     id: 'Deploy Frontend (HPC)'
-    entrypoint: 'sh'
     args:
-      - '-c'
-      - |
-        cd helm-repo/frontend-hpc
-        helm upgrade --install frontend-hpc . --namespace frontend --create-namespace
+      - 'upgrade'
+      - '--install'
+      - 'frontend-hpc'
+      - './helm-repo/frontend-hpc'
+      - '--namespace'
+      - 'frontend'
+      - '--create-namespace'
+      - '--atomic'
 
 options:
   logging: CLOUD_LOGGING_ONLY
