@@ -53,6 +53,5 @@ steps:
         sed -i "s|image: .*poc-frontend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-frontend:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-default-deployment.yaml
         kubectl apply -f k8s/frontend-default-deployment.yaml
 
-
 options:
   logging: CLOUD_LOGGING_ONLY
