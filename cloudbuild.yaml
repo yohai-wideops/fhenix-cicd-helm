@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION
+        gcloud container clusters get-credentials $_CLUSTER_NAME --region $_REGION
 
   # 2️⃣ Extract commit hash for tagging
   - name: 'alpine'
@@ -23,7 +23,7 @@ steps:
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-backend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-hpc-deployment.yaml
+        sed -i "s|image: .*poc-backend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-hpc-deployment.yaml
         kubectl apply -f k8s/backend-hpc-deployment.yaml
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -32,7 +32,7 @@ steps:
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-backend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-default-deployment.yaml
+        sed -i "s|image: .*poc-backend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-backend:$(cat /workspace/commit_hash.txt)|g" k8s/backend-default-deployment.yaml
         kubectl apply -f k8s/backend-default-deployment.yaml
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -41,7 +41,7 @@ steps:
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-frontend-hpc.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-frontend-hpc:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-hpc-deployment.yaml
+        sed -i "s|image: .*poc-frontend-hpc.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-frontend-hpc:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-hpc-deployment.yaml
         kubectl apply -f k8s/frontend-hpc-deployment.yaml
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -50,7 +50,7 @@ steps:
     args:
       - '-c'
       - |
-        sed -i "s|image: .*poc-frontend.*|image: $REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GAR_REPO/poc-frontend:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-default-deployment.yaml
+        sed -i "s|image: .*poc-frontend.*|image: $_REGION-docker.pkg.dev/$_GCP_PROJECT_ID/$_GAR_REPO/poc-frontend:$(cat /workspace/commit_hash.txt)|g" k8s/frontend-default-deployment.yaml
         kubectl apply -f k8s/frontend-default-deployment.yaml
 
 
