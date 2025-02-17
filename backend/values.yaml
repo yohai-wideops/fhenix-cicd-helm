@@ -1,0 +1,11 @@
+imageRegistry: "GAR_LOCATION-docker.pkg.dev/GCP_PROJECT_ID/GAR_REPO"
+
+image: poc-backend
+tag: latest
+namespace: backend
+replicas: 2
+ports:
+  containerPort: 3000
+env:
+  default: "blue"
+

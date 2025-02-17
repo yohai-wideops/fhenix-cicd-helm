@@ -1,0 +1,9 @@
+imageRegistry: "GAR_LOCATION-docker.pkg.dev/GCP_PROJECT_ID/GAR_REPO"
+
+
+image: frontend-hpc
+tag: latest
+namespace: default
+replicas: 2
+ports:
+  containerPort: 80

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.imageRegistry }}/{{ .Values.image }}:{{ .Values.tag }}
+          ports:
+            - containerPort: {{ .Values.ports.containerPort }}
+          env:
+            - name: BG_COLOR
+              value: "{{ .Values.env.default }}"
