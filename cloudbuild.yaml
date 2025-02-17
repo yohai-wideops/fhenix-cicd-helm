@@ -7,7 +7,7 @@ steps:
       - |
         gcloud container clusters get-credentials $_CLUSTER_NAME --region $_REGION
 
-  # 2️⃣ Clone Helm chart repo (fhenix-cicd-helm)
+  # 2️⃣ Clone Helm Chart Repo
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: 'Clone Helm Charts Repo'
     entrypoint: 'bash'
@@ -17,36 +17,35 @@ steps:
         git clone https://${_GH_TOKEN}@github.com/yohai-wideops/fhenix-cicd-helm.git helm-repo
         cd helm-repo
 
-  # 3️⃣ Apply Backend Helm Chart
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  # 3️⃣ Apply Backend Helm Chart (Uses Alpine Helm Image)
+  - name: 'alpine/helm'
     id: 'Deploy Backend'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
         cd helm-repo/backend
-        helm upgrade --install backend . --namespace default --create-namespace
-        helm upgrade --install backend . --namespace hpc --create-namespace
+        helm upgrade --install backend . --namespace backend --create-namespace
 
-  # 4️⃣ Apply Frontend Default Helm Chart
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  # 4️⃣ Apply Frontend Default Helm Chart (Uses Alpine Helm Image)
+  - name: 'alpine/helm'
     id: 'Deploy Frontend (Default)'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
         cd helm-repo/frontend-default
-        helm upgrade --install frontend-default . --namespace default --create-namespace
+        helm upgrade --install frontend-default . --namespace frontend --create-namespace
 
-  # 5️⃣ Apply Frontend HPC Helm Chart
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  # 5️⃣ Apply Frontend HPC Helm Chart (Uses Alpine Helm Image)
+  - name: 'alpine/helm'
     id: 'Deploy Frontend (HPC)'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
         cd helm-repo/frontend-hpc
-        helm upgrade --install frontend-hpc . --namespace hpc --create-namespace
+        helm upgrade --install frontend-hpc . --namespace frontend --create-namespace
 
 options:
   logging: CLOUD_LOGGING_ONLY
